@@ -17,7 +17,7 @@ function onSearch(event) {
   refs.searchList.innerHTML = '';
   refs.searchResult.innerHTML = '';
 
-  let searchValue = event.target.value.trim().toLowerCase();
+  const searchValue = event.target.value.trim().toLowerCase();
 
   if (searchValue.length === 0) {
     return;
@@ -38,7 +38,9 @@ function showResult(result) {
 }
 
 function showError(error) {
-  console.log(error);
+  if (error.message === '404') {
+    return Notify.failure('Oops, there is no country with that name');
+  }
 }
 
 function showCountriesList(countries) {
@@ -51,8 +53,7 @@ function showCountriesList(countries) {
     </li>`
     )
     .join('');
-
-  refs.searchList.insertAdjacentHTML('beforeend', createListMarkup);
+  showMarkup(createListMarkup);
 }
 
 function showCountryInfo(countries) {
@@ -62,14 +63,21 @@ function showCountryInfo(countries) {
         `<div>
         <img src=${country.flags.svg} alt="${country.name}" width="60"/>
         <span>${country.name}</span>
+        </div>
         <p><span>Capital:</span>${country.capital}</p>
         <p><span>Population:</span>${country.population}</p>
         <p><span>Languages:</span>${country.languages
           .map(language => language.name)
-          .join(', ')}</p>
-      </div>`
+          .join(', ')}</p>`
     )
     .join('');
-  refs.searchResult.insertAdjacentHTML('beforeend', createCountryInfoMarkup);
-  console.log(createCountryInfoMarkup);
+  showMarkup(createCountryInfoMarkup);
+}
+
+function showMarkup(markup) {
+  if (markup.includes('Capital')) {
+    refs.searchResult.insertAdjacentHTML('beforeend', markup);
+  } else {
+    refs.searchList.insertAdjacentHTML('beforeend', markup);
+  }
 }
